@@ -14,8 +14,19 @@ This utility is built on an optimized script designed to download backups (by de
 <br>![Divider](https://tr7zw.github.io/uikit/divider_faded/Divider_03.png)
 
 <br>![Features](https://tr7zw.github.io/uikit/headlines/large/Features.png)
+### For Developers
+- Go to the [Google Cloud Console](https://console.cloud.google.com/?spm=a2ty_o01.29997173.0.0.64a155fbvmooUf)
+- Create a new project
+- Enable the Google Drive API
+- Go to APIs & Services > Credentials
+- Create an OAuth 2.0 Client ID (type: Desktop app)
+- Download the JSON file and save it as `client_secret.json` in the program folder
 
-not now
+### For user
+- Go in latest release
+- Download zip and extract folder
+- open exubetle file
+- start working
 
 <br>![Divider](https://tr7zw.github.io/uikit/divider_faded/Divider_03.png)
 
@@ -28,4 +39,3 @@ If you encounter technical issues, first check the Issues section—a solution h
 <br>![FAQ](https://tr7zw.github.io/uikit/headlines/medium/FAQ.png)
 
 not now
-Feel free to use this mod in your Modrinth/Curseforge hosted modpacks without asking for permission. Do not redistribute the jar files anywhere else!
