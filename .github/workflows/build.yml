@@ -1,0 +1,158 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Build EXE with PyInstaller
+      run: |
+        pyinstaller --onefile --name "ABBB" --icon=abbb.ico --add-data "README.md;." abbb_v2.py
+      continue-on-error: true
+    
+    - name: Build EXE without icon (fallback)
+      if: failure()
+      run: |
+        pyinstaller --onefile --name "ABBB" --add-data "README.md;." abbb_v2.py
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ABBB-Windows
+        path: dist/ABBB.exe
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/ABBB.exe
+        body: |
+          ## AternosBringBackBackups v${{ github.ref_name }}
+          
+          ### Что нового:
+          - Прямое подключение к Aternos через веб-API
+          - Скачивание всех файлов сервера (миры, плагины, конфиги)
+          - Интерактивный режим выбора сервера и типа скачивания
+          - Сохранение учётных данных для быстрого входа
+          
+          ### Как использовать:
+          1. Запустите ABBB.exe
+          2. Введите логин и пароль от аккаунта Aternos
+          3. Выберите сервер
+          4. Выберите что скачать (всё/миры/плагины)
+          5. Файлы будут сохранены на рабочем столе в папке AternosBackups
+          
+          ### Требования:
+          - Действующий аккаунт Aternos
+          - Интернет-соединение
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Build executable with PyInstaller
+      run: |
+        pyinstaller --onefile --name "ABBB" --add-data "README.md:." abbb_v2.py
+      continue-on-error: true
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ABBB-Linux
+        path: dist/ABBB
+    
+    - name: Add to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/ABBB
+        body: |
+          ## AternosBringBackBackups v${{ github.ref_name }}
+          
+          ### Linux версия
+          Сделайте файл исполняемым: `chmod +x ABBB`
+          Запуск: `./ABBB`
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Build executable with PyInstaller
+      run: |
+        pyinstaller --onefile --name "ABBB" --add-data "README.md:." abbb_v2.py
+      continue-on-error: true
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ABBB-macOS
+        path: dist/ABBB
+    
+    - name: Add to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/ABBB
+        body: |
+          ## AternosBringBackBackups v${{ github.ref_name }}
+          
+          ### macOS версия
+          Запуск: `./ABBB` или дважды кликните в Finder
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
